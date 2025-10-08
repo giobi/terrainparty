@@ -124,6 +124,7 @@ npm start
 # In another terminal, run tests
 npm test                      # Test heightmap generation
 node test-tile-proxy.js       # Test tile proxy endpoint
+./test-tile-providers.sh      # Diagnose tile provider connectivity
 ```
 
 The tests will verify:
@@ -131,6 +132,9 @@ The tests will verify:
 - Heightmap generation works correctly
 - Tile proxy endpoint validates parameters properly
 - Generated files are valid PNG format
+- Tile providers (CARTO and OSM) are accessible
+
+**Troubleshooting:** If maps don't load, run `./test-tile-providers.sh` to diagnose the issue.
 
 ## License
 

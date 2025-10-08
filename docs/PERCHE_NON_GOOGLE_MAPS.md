@@ -169,6 +169,21 @@ Se hai davvero bisogno di Google Maps per un deployment privato:
 
 ## Se la Mappa Non Funziona - Risoluzione Problemi
 
+### Script di Diagnostica Automatico
+
+Esegui questo script per testare automaticamente i tile provider:
+
+```bash
+./test-tile-providers.sh
+```
+
+Lo script controllerà:
+- ✓ Connettività a CARTO
+- ✓ Connettività a OpenStreetMap
+- ✓ Server locale (se in esecuzione)
+- ✓ Risoluzione DNS
+- ✓ Proxy tiles API
+
 ### Passo 1: Verifica Connessione
 ```bash
 # Testa se il server risponde

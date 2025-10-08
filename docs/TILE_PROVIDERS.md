@@ -122,6 +122,8 @@
 
 ### Q: Why isn't the map working?
 
+**Quick Diagnostic:** Run `./test-tile-providers.sh` to automatically test tile provider connectivity.
+
 If the map isn't displaying, try:
 
 1. **Check internet connection**
