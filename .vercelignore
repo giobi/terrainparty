@@ -1,0 +1,8 @@
+# Don't ignore these files on Vercel
+# This ensures all necessary files are included in deployment
+
+# Only ignore development and test files
+test-output/
+*.log
+.env.local
+.DS_Store

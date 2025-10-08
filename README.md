@@ -12,6 +12,8 @@ Deploy this application instantly to your preferred platform:
 
 **No server management required!** All platforms offer free tiers perfect for this application.
 
+**Note**: If the one-click deploy creates an empty repository, please see the [troubleshooting guide](docs/VERCEL_DEPLOYMENT.md#empty-repository-after-one-click-deploy) for solutions.
+
 See [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md) for detailed deployment instructions.
 
 ## Features
