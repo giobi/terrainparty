@@ -92,8 +92,14 @@ module.exports = async (req, res) => {
     .png()
     .toBuffer();
 
+    // Generate unique filename based on coordinates to prevent caching issues
+    const filename = `heightmap_${north.toFixed(4)}_${west.toFixed(4)}.png`;
+    
     res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Content-Disposition', 'attachment; filename="heightmap.png"');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.send(pngBuffer);
 
   } catch (error) {
