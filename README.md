@@ -90,6 +90,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment) for details.
 
 - **Map Size**: Exactly 12.6km × 12.6km (as required by Cities Skylines 2)
 - **Output Format**: Grayscale PNG, 1081×1081 pixels
+- **Map Tiles**: OpenStreetMap tiles served via server-side proxy (avoids CORS issues)
 - **Elevation Data**: Fetched from Open-Elevation API (with fallback to synthetic terrain)
 - **Elevation Range**: Normalized to 0-255 grayscale values
 
@@ -105,6 +106,25 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment) for details.
 - **axios**: HTTP client for API requests
 - **sharp**: Image processing library
 - **leaflet**: Interactive map library (frontend)
+
+## Testing
+
+Run the test suite to verify the server is working correctly:
+
+```bash
+# Start the server first
+npm start
+
+# In another terminal, run tests
+npm test                      # Test heightmap generation
+node test-tile-proxy.js       # Test tile proxy endpoint
+```
+
+The tests will verify:
+- Server is running and accessible
+- Heightmap generation works correctly
+- Tile proxy endpoint validates parameters properly
+- Generated files are valid PNG format
 
 ## License
 

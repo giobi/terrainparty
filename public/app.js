@@ -135,7 +135,6 @@ function drawTile(tileX, tileY, tileSize) {
         // Load tile if not already loading
         loadingTiles.add(tileKey);
         const img = new Image();
-        img.crossOrigin = 'anonymous';
         
         img.onload = () => {
             tileCache.set(tileKey, img);
@@ -145,6 +144,7 @@ function drawTile(tileX, tileY, tileSize) {
         
         img.onerror = () => {
             loadingTiles.delete(tileKey);
+            console.log(`Failed to load tile: ${tileKey}`);
             // Draw placeholder for failed tiles
             ctx.fillStyle = '#2c3e50';
             ctx.fillRect(screenX, screenY, tileSize, tileSize);
@@ -152,9 +152,9 @@ function drawTile(tileX, tileY, tileSize) {
             ctx.strokeRect(screenX, screenY, tileSize, tileSize);
         };
         
-        // OpenStreetMap tile server
-        // Format: https://tile.openstreetmap.org/{z}/{x}/{y}.png
-        img.src = `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`;
+        // Try proxy first, fallback to direct OSM if proxy fails
+        // Format: /api/tiles/{z}/{x}/{y}.png
+        img.src = `/api/tiles/${zoom}/${tileX}/${tileY}.png`;
         
         // Draw loading placeholder
         ctx.fillStyle = '#2c3e50';
