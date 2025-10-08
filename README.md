@@ -2,6 +2,12 @@
 
 A web application that replicates the functionality of terrain.party for Cities Skylines 2. This tool allows you to select any 12.6km × 12.6km area on OpenStreetMap and download a grayscale heightmap PNG suitable for importing into Cities Skylines 2.
 
+> 🇮🇹 **Nota per utenti italiani:** Per capire perché non usiamo Google Maps, vedi [docs/PERCHE_NON_GOOGLE_MAPS.md](docs/PERCHE_NON_GOOGLE_MAPS.md)
+>
+> 📖 **About tile providers:** Wondering why we don't use Google Maps? See [docs/TILE_PROVIDERS.md](docs/TILE_PROVIDERS.md) for a detailed comparison.
+>
+> ⚡ **Quick Reference:** For a TL;DR comparison, see [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
+
 ## 🚀 Quick Deploy
 
 Deploy this application instantly to your preferred platform:
@@ -92,6 +98,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment) for details.
 - **Output Format**: Grayscale PNG, 1081×1081 pixels
 - **Map Tiles**: Uses CARTO tiles (free, production-ready) with OpenStreetMap data, served via server-side proxy (avoids CORS issues)
 - **Tile Fallback**: Automatic fallback to OpenStreetMap tiles if CARTO is unavailable
+- **Why not Google Maps?**: Google Maps requires API keys, costs $4,000-$8,000/year, and offers no advantages over our free solution. See [docs/TILE_PROVIDERS.md](docs/TILE_PROVIDERS.md) for detailed comparison.
 - **Elevation Data**: Fetched from Open-Elevation API (with fallback to synthetic terrain)
 - **Elevation Range**: Normalized to 0-255 grayscale values
 
@@ -119,6 +126,7 @@ npm start
 # In another terminal, run tests
 npm test                      # Test heightmap generation
 node test-tile-proxy.js       # Test tile proxy endpoint
+./test-tile-providers.sh      # Diagnose tile provider connectivity
 ```
 
 The tests will verify:
@@ -126,6 +134,9 @@ The tests will verify:
 - Heightmap generation works correctly
 - Tile proxy endpoint validates parameters properly
 - Generated files are valid PNG format
+- Tile providers (CARTO and OSM) are accessible
+
+**Troubleshooting:** If maps don't load, run `./test-tile-providers.sh` to diagnose the issue.
 
 ## License
 

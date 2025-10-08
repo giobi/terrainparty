@@ -265,6 +265,25 @@
         .map-attribution a:hover {
             text-decoration: underline;
         }
+
+        .map-attribution .info-icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            line-height: 14px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: help;
+            margin-left: 5px;
+        }
+
+        .map-attribution .info-icon:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
@@ -286,6 +305,7 @@
         <div class="map-attribution">
             © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors | 
             © <a href="https://carto.com/attributions" target="_blank">CARTO</a>
+            <span class="info-icon" title="Free tile providers - no Google Maps API key needed! Using CARTO (production-ready) with OpenStreetMap fallback. Click to learn more." onclick="window.open('https://github.com/giobi/terrainparty/blob/main/docs/TILE_PROVIDERS.md', '_blank')">?</span>
         </div>
     </div>
 

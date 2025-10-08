@@ -86,6 +86,20 @@ The map tiles are served via our server proxy from CARTO (with OpenStreetMap dat
 
 See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for easiest setup or [SERVERLESS_DEPLOYMENT.md](SERVERLESS_DEPLOYMENT.md) for fully serverless.
 
+### Why use CARTO/OpenStreetMap instead of Google Maps?
+
+**Short answer:** Google Maps costs $4,000-$8,000/year, requires API keys, and needs credit card billing. Our current solution (CARTO + OpenStreetMap) is free, reliable, and works better for an open-source project.
+
+**Detailed explanation:** See [TILE_PROVIDERS.md](TILE_PROVIDERS.md) for comprehensive comparison.
+
+**Key benefits of current solution:**
+- ✅ Completely free (no API key, no credit card)
+- ✅ Production-ready and reliable
+- ✅ Fast global CDN
+- ✅ Works on Vercel/Netlify/Railway
+- ✅ Privacy-friendly (no Google tracking)
+- ✅ Same map quality (OpenStreetMap data)
+
 ### Why doesn't it use a map library like Leaflet?
 The current implementation uses a lightweight canvas-based map to avoid external dependencies and ensure it works in restricted environments. This makes the app more portable and faster to load.
 
@@ -168,6 +182,9 @@ No installation needed. Just visit the website in your browser.
 - Try a different browser
 - Disable ad blockers temporarily (though our server proxy should work even with ad blockers)
 - If the issue persists after deployment, check server logs for tile fetching errors
+- See [TILE_PROVIDERS.md](TILE_PROVIDERS.md) for detailed troubleshooting
+
+**Note:** We use CARTO + OpenStreetMap (not Google Maps) because they're free, reliable, and production-ready. See [TILE_PROVIDERS.md](TILE_PROVIDERS.md) for why we don't use Google Maps.
 
 ## Troubleshooting
 
