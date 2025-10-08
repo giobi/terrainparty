@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terrain Party - CS2 Heightmap Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        header {
+            background-color: #2c3e50;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+            color: #3498db;
+        }
+
+        header p {
+            color: #bdc3c7;
+            font-size: 0.9em;
+        }
+
+        #mapContainer {
+            flex: 1;
+            width: 100%;
+            position: relative;
+            background-color: #34495e;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            cursor: move;
+        }
+
+        .selection-box {
+            position: absolute;
+            border: 3px solid #3498db;
+            background-color: rgba(52, 152, 219, 0.2);
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+
+        .controls {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            z-index: 1000;
+            background-color: rgba(44, 62, 80, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            min-width: 280px;
+        }
+
+        .controls h3 {
+            margin-bottom: 15px;
+            color: #3498db;
+            font-size: 1.2em;
+        }
+
+        .info-box {
+            background-color: rgba(52, 73, 94, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+        }
+
+        .info-box strong {
+            color: #3498db;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        #selectAreaBtn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        #selectAreaBtn:hover {
+            background-color: #2980b9;
+        }
+
+        #selectAreaBtn:disabled {
+            background-color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        #downloadBtn {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        #downloadBtn:hover:not(:disabled) {
+            background-color: #229954;
+        }
+
+        #downloadBtn:disabled {
+            background-color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        #clearBtn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        #clearBtn:hover {
+            background-color: #c0392b;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .status.success {
+            background-color: rgba(39, 174, 96, 0.3);
+            color: #2ecc71;
+        }
+
+        .status.error {
+            background-color: rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+
+        .status.info {
+            background-color: rgba(52, 152, 219, 0.3);
+            color: #3498db;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .instructions {
+            background-color: rgba(52, 152, 219, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            border-left: 3px solid #3498db;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+            background-color: rgba(44, 62, 80, 0.9);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .zoom-controls button {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            margin: 0;
+            border: none;
+            background-color: rgba(44, 62, 80, 0.9);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: block;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .zoom-controls button:last-child {
+            border-bottom: none;
+        }
+
+        .zoom-controls button:hover {
+            background-color: rgba(52, 152, 219, 0.8);
+        }
+
+        .map-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 100;
+            background-color: rgba(44, 62, 80, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            color: #bdc3c7;
+        }
+
+        .map-attribution {
+            position: absolute;
+            bottom: 10px;
+            right: 320px;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            color: #333;
+        }
+
+        .map-attribution a {
+            color: #0078A8;
+            text-decoration: none;
+        }
+
+        .map-attribution a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏔️ Terrain Party</h1>
+        <p>Generate heightmaps for Cities Skylines 2 - Select a 12.6km × 12.6km area</p>
+    </header>
+
+    <div id="mapContainer">
+        <canvas id="map"></canvas>
+        <div class="zoom-controls">
+            <button id="zoomIn" title="Zoom In">+</button>
+            <button id="zoomOut" title="Zoom Out">−</button>
+        </div>
+        <div class="map-info">
+            <div id="mapCoords">Lat: 40.7128, Lon: -74.0060 | Zoom: 10</div>
+            <div style="margin-top: 5px; font-size: 0.8em;">Drag to pan • Scroll to zoom</div>
+        </div>
+        <div class="map-attribution">
+            © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors
+        </div>
+    </div>
+
+    <div class="controls">
+        <h3>Controls</h3>
+        
+        <div class="instructions">
+            <strong>How to use:</strong><br>
+            1. Navigate to your desired location<br>
+            2. Click "Select Area" to place a 12.6km square<br>
+            3. Click "Download Heightmap" to generate PNG
+        </div>
+
+        <div class="info-box">
+            <p><strong>Area Size:</strong> 12.6 km × 12.6 km</p>
+            <p><strong>Output:</strong> 1081×1081 px PNG</p>
+            <p id="centerCoords"><strong>Center:</strong> Click map to select</p>
+        </div>
+
+        <button id="selectAreaBtn">📍 Select Area (Click Map)</button>
+        <button id="downloadBtn" disabled>⬇️ Download Heightmap</button>
+        <button id="clearBtn">🗑️ Clear Selection</button>
+
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Generating heightmap...</p>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
