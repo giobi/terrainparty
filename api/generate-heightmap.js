@@ -41,7 +41,10 @@ async function generateHeightmap(north, south, east, west, size) {
 function generateSyntheticElevation(lat, lon) {
   // Generate synthetic terrain using simple noise functions
   // This is a fallback when the elevation API is unavailable
-  const scale = 100;
+  // Use a smaller scale (0.5) to create location-dependent patterns
+  // A scale of 0.5 means patterns repeat every ~12 degrees (about 1300km)
+  // This ensures each geographic location produces a unique heightmap
+  const scale = 0.5;
   const noise = Math.sin(lat * scale) * Math.cos(lon * scale) * 0.5 + 0.5;
   const noise2 = Math.sin(lat * scale * 2.5) * Math.cos(lon * scale * 2.5) * 0.25 + 0.5;
   const combined = (noise * 0.7 + noise2 * 0.3);
