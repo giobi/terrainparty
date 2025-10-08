@@ -82,7 +82,7 @@ Or use platforms with auto-managed infrastructure:
 - Netlify
 - Railway
 
-The map tiles are loaded directly from OpenStreetMap servers (no API key required).
+The map tiles are served via our server proxy from CARTO (with OpenStreetMap data), ensuring reliable map display on all platforms. No API key required.
 
 See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for easiest setup or [SERVERLESS_DEPLOYMENT.md](SERVERLESS_DEPLOYMENT.md) for fully serverless.
 
@@ -166,7 +166,8 @@ No installation needed. Just visit the website in your browser.
 - Check your internet connection
 - Refresh the page
 - Try a different browser
-- Disable ad blockers (they may block map rendering)
+- Disable ad blockers temporarily (though our server proxy should work even with ad blockers)
+- If the issue persists after deployment, check server logs for tile fetching errors
 
 ## Troubleshooting
 
