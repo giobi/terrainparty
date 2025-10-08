@@ -9,6 +9,47 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static('public'));
 
+// Tile proxy endpoint to avoid CORS issues with OpenStreetMap
+app.get('/api/tiles/:z/:x/:y.png', async (req, res) => {
+  try {
+    const { z, x, y } = req.params;
+    
+    // Validate tile coordinates
+    const zoom = parseInt(z);
+    const tileX = parseInt(x);
+    const tileY = parseInt(y);
+    
+    if (isNaN(zoom) || isNaN(tileX) || isNaN(tileY)) {
+      return res.status(400).send('Invalid tile coordinates');
+    }
+    
+    const maxTile = Math.pow(2, zoom);
+    if (tileX < 0 || tileX >= maxTile || tileY < 0 || tileY >= maxTile) {
+      return res.status(400).send('Tile coordinates out of range');
+    }
+    
+    // Fetch tile from OpenStreetMap
+    const tileUrl = `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`;
+    
+    const response = await axios.get(tileUrl, {
+      responseType: 'arraybuffer',
+      headers: {
+        'User-Agent': 'TerrainParty/1.0'
+      },
+      timeout: 10000
+    });
+    
+    // Set appropriate headers
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+    res.send(response.data);
+    
+  } catch (error) {
+    console.error('Error fetching tile:', error.message);
+    res.status(500).send('Failed to fetch tile');
+  }
+});
+
 // Endpoint to generate heightmap
 app.post('/api/generate-heightmap', async (req, res) => {
   try {
