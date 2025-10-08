@@ -77,7 +77,12 @@ Yes! The application can be deployed serverlessly using:
 - GitHub Pages (frontend)
 - Cloudflare Workers (backend)
 
-See [SERVERLESS_DEPLOYMENT.md](SERVERLESS_DEPLOYMENT.md) for details.
+Or use platforms with auto-managed infrastructure:
+- Vercel (one-click deploy)
+- Netlify
+- Railway
+
+See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for easiest setup or [SERVERLESS_DEPLOYMENT.md](SERVERLESS_DEPLOYMENT.md) for fully serverless.
 
 ### Why doesn't it use a map library like Leaflet?
 The current implementation uses a lightweight canvas-based map to avoid external dependencies and ensure it works in restricted environments. This makes the app more portable and faster to load.
@@ -95,6 +100,50 @@ Yes! Terrain Party is open source. Check the GitHub repository.
 
 ### Can I contribute to the project?
 Absolutely! Pull requests are welcome. See the GitHub repository for contribution guidelines.
+
+## Deployment & Hosting
+
+### Do I need a server to run this?
+**Technically yes, but practically no!** The app uses serverless functions that auto-scale:
+- No traditional 24/7 server needed
+- Runs only when generating heightmaps
+- Zero server management
+- Free or very cheap hosting
+
+### Can I deploy this on Vercel?
+**Yes!** Vercel is the recommended platform:
+- One-click deployment
+- Free tier (100GB bandwidth/month)
+- Auto-scaling
+- Zero configuration
+
+Click the "Deploy to Vercel" button in the README or see [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md).
+
+### What about Netlify, Railway, or Render?
+All work great! The app is compatible with:
+- ✅ Vercel
+- ✅ Netlify  
+- ✅ Railway
+- ✅ Render
+- ✅ Fly.io
+
+See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for platform comparison.
+
+### How much does hosting cost?
+**Free for most usage:**
+- Vercel free tier: 100GB bandwidth/month (~200k-400k downloads)
+- Netlify free tier: 100GB bandwidth/month
+- Railway: $5 free credit/month
+
+For typical usage (hundreds to thousands of downloads/month), you'll stay in the free tier.
+
+### Can I use my own domain?
+Yes! All platforms support custom domains:
+1. Deploy to your chosen platform
+2. Go to project settings
+3. Add your domain
+4. Update DNS records
+5. Done!
 
 ## Browser & Compatibility
 

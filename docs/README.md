@@ -37,6 +37,13 @@ Welcome to the Terrain Party documentation! Find the information you need below.
 - Implementation examples
 - Deployment checklist
 
+**[Vercel Deployment](VERCEL_DEPLOYMENT.md)** - One-click deployment guide
+- Vercel, Netlify, Railway setup
+- Quick deploy buttons
+- Zero configuration deployment
+- Alternative platforms comparison
+- Cost analysis
+
 ### In Repository Root
 
 **[README.md](../README.md)** - Project overview
@@ -61,6 +68,9 @@ Start here: [Architecture](ARCHITECTURE.md) → [README.md](../README.md)
 
 ### Serverless Deployment
 Start here: [Serverless Deployment](SERVERLESS_DEPLOYMENT.md)
+
+### Vercel/Netlify Deployment
+Start here: [Vercel Deployment](VERCEL_DEPLOYMENT.md)
 
 ## 📖 Reading Order
 
@@ -95,6 +105,7 @@ Start here: [Serverless Deployment](SERVERLESS_DEPLOYMENT.md)
 
 ### Deployment
 - [Serverless Deployment](SERVERLESS_DEPLOYMENT.md) - Serverless setup
+- [Vercel Deployment](VERCEL_DEPLOYMENT.md) - One-click deployment
 - [Architecture](ARCHITECTURE.md#deployment) - Server deployment
 
 ### API Usage

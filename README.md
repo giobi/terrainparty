@@ -2,6 +2,18 @@
 
 A web application that replicates the functionality of terrain.party for Cities Skylines 2. This tool allows you to select any 12.6km × 12.6km area on OpenStreetMap and download a grayscale heightmap PNG suitable for importing into Cities Skylines 2.
 
+## 🚀 Quick Deploy
+
+Deploy this application instantly to your preferred platform:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/giobi/tarrainparty)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/giobi/tarrainparty)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/giobi/tarrainparty)
+
+**No server management required!** All platforms offer free tiers perfect for this application.
+
+See [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md) for detailed deployment instructions.
+
 ## Features
 
 - 🗺️ Interactive OpenStreetMap interface
@@ -39,6 +51,38 @@ http://localhost:3000
 2. **Select Area**: Click the "Select Area" button, then click on the map to place a 12.6km × 12.6km square
 3. **Download**: Click "Download Heightmap" to generate and download the grayscale PNG
 4. **Import to CS2**: Use the downloaded PNG file as a heightmap in Cities Skylines 2
+
+## Deployment Options
+
+### Option 1: Vercel/Netlify/Railway (Recommended) ✅
+
+**One-click deployment** - No server setup required!
+
+- ✅ **Free tier** available on all platforms
+- ✅ **Auto-scaling** - Handles any traffic
+- ✅ **Zero maintenance** - Platform manages everything
+- ✅ **Global CDN** - Fast worldwide
+- ✅ **HTTPS** included
+
+Click the deploy buttons above or see [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md) for detailed instructions.
+
+### Option 2: Serverless (GitHub Pages + Cloudflare Workers)
+
+Deploy with **zero hosting costs**:
+- Frontend on GitHub Pages (FREE)
+- Backend on Cloudflare Workers (FREE tier: 100k requests/day)
+
+See [docs/SERVERLESS_DEPLOYMENT.md](docs/SERVERLESS_DEPLOYMENT.md) for complete guide.
+
+### Option 3: Traditional Server
+
+Deploy on any VPS or cloud provider:
+```bash
+npm install
+npm start
+```
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment) for details.
 
 ## Technical Details
 
