@@ -5,6 +5,8 @@ A web application that replicates the functionality of terrain.party for Cities 
 > 🇮🇹 **Nota per utenti italiani:** Per capire perché non usiamo Google Maps, vedi [docs/PERCHE_NON_GOOGLE_MAPS.md](docs/PERCHE_NON_GOOGLE_MAPS.md)
 >
 > 📖 **About tile providers:** Wondering why we don't use Google Maps? See [docs/TILE_PROVIDERS.md](docs/TILE_PROVIDERS.md) for a detailed comparison.
+>
+> ⚡ **Quick Reference:** For a TL;DR comparison, see [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
 
 ## 🚀 Quick Deploy
 
