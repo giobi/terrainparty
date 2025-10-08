@@ -90,7 +90,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#deployment) for details.
 
 - **Map Size**: Exactly 12.6km × 12.6km (as required by Cities Skylines 2)
 - **Output Format**: Grayscale PNG, 1081×1081 pixels
-- **Map Tiles**: OpenStreetMap tiles served via server-side proxy (avoids CORS issues)
+- **Map Tiles**: Uses CARTO tiles (free, production-ready) with OpenStreetMap data, served via server-side proxy (avoids CORS issues)
+- **Tile Fallback**: Automatic fallback to OpenStreetMap tiles if CARTO is unavailable
 - **Elevation Data**: Fetched from Open-Elevation API (with fallback to synthetic terrain)
 - **Elevation Range**: Normalized to 0-255 grayscale values
 

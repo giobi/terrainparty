@@ -11,7 +11,7 @@ The OpenStreetMap tiles were being blocked by browsers when loaded directly from
 - **Ad-blockers**: Many browser extensions block known tile servers
 - **Security Policies**: Some enterprise networks block external image sources
 
-## Solution: Server-Side Tile Proxy
+## Solution: Server-Side Tile Proxy with Multiple Providers
 
 ### Architecture
 
@@ -23,11 +23,12 @@ Before (BLOCKED):
 └─────────┘                   └───────────────────┘
 
 After (WORKING):
-┌─────────┐  /api/tiles/z/x/y  ┌──────────┐  https://tile...  ┌───────────────────┐
-│ Browser │ ──────────────────>│   Our    │ ───────────────> │ tile.openstreetmap│
-│ Client  │  Same Origin ✓     │  Server  │  Server-to-Server│      .org         │
-└─────────┘<──────────────────┘──────────┘<─────────────────└───────────────────┘
-                  PNG Data           Proxy              PNG Data
+┌─────────┐  /api/tiles/z/x/y  ┌──────────┐  Try CARTO first    ┌──────────────┐
+│ Browser │ ──────────────────>│   Our    │ ──────────────────> │ CARTO CDN    │
+│ Client  │  Same Origin ✓     │  Server  │  Server-to-Server   │ (Primary)    │
+└─────────┘<──────────────────┘──────────┘<────────────────────└──────────────┘
+                  PNG Data           Proxy    If fails, fallback    
+                                              to tile.openstreetmap.org
 ```
 
 ### Implementation Details
@@ -36,7 +37,8 @@ After (WORKING):
 ```javascript
 app.get('/api/tiles/:z/:x/:y.png', async (req, res) => {
   // Validate coordinates
-  // Fetch from OpenStreetMap
+  // Try CARTO tiles (production-friendly, no API key needed)
+  // Fallback to OpenStreetMap if CARTO fails
   // Cache for 24 hours
   // Return PNG to client
 });
@@ -45,8 +47,10 @@ app.get('/api/tiles/:z/:x/:y.png', async (req, res) => {
 **Benefits:**
 - Same-origin requests (no CORS issues)
 - Server acts as intermediary
-- Caching reduces OSM server load
+- Caching reduces tile server load
 - Bypasses ad-blockers
+- **Multiple providers with automatic fallback**
+- **Production-ready tile servers (CARTO) that handle high traffic**
 
 #### 2. Client-Side Update (app.js)
 ```javascript
@@ -146,13 +150,35 @@ After deployment, monitor:
 ## Compliance
 
 This implementation follows:
-- **OpenStreetMap Tile Usage Policy**: Proper User-Agent, caching, reasonable request rates
+- **OpenStreetMap Tile Usage Policy**: The standard tile.openstreetmap.org server is intended for development and low-traffic sites. For production use, they recommend alternative tile servers.
+- **CARTO Tile Service**: Free tier with no API key required, designed for production use. Uses OpenStreetMap data.
+- **Proper Attribution**: Both CARTO and OpenStreetMap are credited in the map attribution
 - **CORS Best Practices**: Server-side proxying for external resources
 - **Web Standards**: Standard HTTP caching headers
 - **Vercel Guidelines**: Compatible with serverless functions
 
+### Why CARTO?
+
+The standard `tile.openstreetmap.org` server has strict usage policies:
+- Not intended for heavy use or production applications
+- May rate-limit or block requests from cloud hosting providers
+- Can result in maps not displaying on Vercel/Netlify/Railway
+
+**CARTO** provides:
+- ✅ Free tier with no API key required
+- ✅ Designed for production traffic
+- ✅ Better reliability on cloud platforms
+- ✅ Uses OpenStreetMap data (same map style)
+- ✅ Automatic fallback to OSM if needed
+
 ## Summary
 
-The fix transforms blocked direct tile requests into reliable same-origin requests via a server-side proxy. This ensures the map displays correctly for all users, regardless of browser settings or ad-blockers.
+The fix uses a production-friendly tile provider (CARTO) instead of OpenStreetMap's development tile server. This ensures the map displays correctly for all users on Vercel and other cloud platforms, regardless of browser settings or ad-blockers.
 
-**Impact**: Users can now see the map and select terrain areas for heightmap generation! 🎉
+The implementation includes:
+1. **Primary provider**: CARTO (free, production-ready)
+2. **Fallback provider**: OpenStreetMap (for redundancy)
+3. **Proper attribution**: Both providers are credited
+4. **Server-side proxy**: Avoids CORS and client-side blocking
+
+**Impact**: Users can now see the map reliably on Vercel and select terrain areas for heightmap generation! 🎉

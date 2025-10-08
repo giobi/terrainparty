@@ -28,22 +28,40 @@ app.get('/api/tiles/:z/:x/:y.png', async (req, res) => {
       return res.status(400).send('Tile coordinates out of range');
     }
     
-    // Fetch tile from OpenStreetMap
-    const tileUrl = `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`;
+    // Fetch tile from tile servers
+    // Using multiple providers with fallback for better reliability
+    const tileProviders = [
+      // CartoDB Voyager - Free, no API key required, better for production
+      `https://a.basemaps.cartocdn.com/rastertiles/voyager/${zoom}/${tileX}/${tileY}.png`,
+      // OpenStreetMap - Fallback option
+      `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`
+    ];
     
-    const response = await axios.get(tileUrl, {
-      responseType: 'arraybuffer',
-      headers: {
-        'User-Agent': 'TerrainParty/1.0'
-      },
-      timeout: 10000
-    });
+    let lastError;
+    for (const tileUrl of tileProviders) {
+      try {
+        const response = await axios.get(tileUrl, {
+          responseType: 'arraybuffer',
+          headers: {
+            'User-Agent': 'TerrainParty/1.0',
+            'Referer': process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/` : 'https://terrainparty.vercel.app/'
+          },
+          timeout: 10000
+        });
+        
+        // Set appropriate headers
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+        return res.send(response.data);
+      } catch (error) {
+        lastError = error;
+        console.log(`Failed to fetch from ${tileUrl.split('/')[2]}, trying next provider...`);
+        continue;
+      }
+    }
     
-    // Set appropriate headers
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-    res.send(response.data);
-    
+    // If all providers fail, throw the last error
+    throw lastError;
   } catch (error) {
     console.error('Error fetching tile:', error.message);
     res.status(500).send('Failed to fetch tile');
