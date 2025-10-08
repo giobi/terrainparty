@@ -16,9 +16,9 @@ See [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md) for detailed deployme
 
 ## Features
 
-- 🗺️ Interactive OpenStreetMap interface
+- 🗺️ Interactive map with real OpenStreetMap tiles
 - 📏 Precise 12.6km × 12.6km area selection
-- 🏔️ Real elevation data using Open-Elevation API
+- 🏔️ Elevation data generation (synthetic terrain with real data support)
 - 📥 Download heightmaps as PNG (1081×1081 pixels)
 - 🎮 Ready for Cities Skylines 2 import
 

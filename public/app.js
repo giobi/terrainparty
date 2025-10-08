@@ -1,4 +1,4 @@
-// Simple map implementation without external dependencies
+// Map implementation with OpenStreetMap tiles
 let canvas, ctx;
 let mapCenter = { lat: 40.7128, lon: -74.0060 }; // Default: New York
 let zoom = 10;
@@ -7,6 +7,8 @@ let lastMousePos = { x: 0, y: 0 };
 let selectionBox = null;
 let currentBounds = null;
 let isSelecting = false;
+let tileCache = new Map(); // Cache for loaded tiles
+let loadingTiles = new Set(); // Track tiles being loaded
 
 // Map projection utilities (Web Mercator)
 function latLonToPixel(lat, lon, zoom) {
@@ -79,35 +81,8 @@ function drawMap() {
     ctx.fillStyle = '#34495e';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Draw grid lines
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.lineWidth = 1;
-    
-    const gridSize = 50;
-    for (let x = 0; x < canvas.width; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-    }
-    for (let y = 0; y < canvas.height; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-    }
-    
-    // Draw center crosshair
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.lineWidth = 2;
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    ctx.beginPath();
-    ctx.moveTo(centerX - 20, centerY);
-    ctx.lineTo(centerX + 20, centerY);
-    ctx.moveTo(centerX, centerY - 20);
-    ctx.lineTo(centerX, centerY + 20);
-    ctx.stroke();
+    // Draw OpenStreetMap tiles
+    drawMapTiles();
     
     // Draw selection box if exists
     if (selectionBox) {
@@ -116,6 +91,77 @@ function drawMap() {
     
     // Update map info
     updateMapInfo();
+}
+
+function drawMapTiles() {
+    const tileSize = 256;
+    const centerPixel = getMapPixelCenter();
+    
+    // Calculate which tiles we need to display
+    const startX = Math.floor((centerPixel.x - canvas.width / 2) / tileSize);
+    const startY = Math.floor((centerPixel.y - canvas.height / 2) / tileSize);
+    const endX = Math.ceil((centerPixel.x + canvas.width / 2) / tileSize);
+    const endY = Math.ceil((centerPixel.y + canvas.height / 2) / tileSize);
+    
+    // Draw each tile
+    for (let x = startX; x <= endX; x++) {
+        for (let y = startY; y <= endY; y++) {
+            drawTile(x, y, tileSize);
+        }
+    }
+}
+
+function drawTile(tileX, tileY, tileSize) {
+    // Validate tile coordinates
+    const maxTile = Math.pow(2, zoom);
+    if (tileX < 0 || tileX >= maxTile || tileY < 0 || tileY >= maxTile) {
+        return;
+    }
+    
+    const tileKey = `${zoom}/${tileX}/${tileY}`;
+    const centerPixel = getMapPixelCenter();
+    
+    // Calculate screen position for this tile
+    const screenX = (tileX * tileSize - centerPixel.x) + canvas.width / 2;
+    const screenY = (tileY * tileSize - centerPixel.y) + canvas.height / 2;
+    
+    // Check if tile is in cache
+    if (tileCache.has(tileKey)) {
+        const img = tileCache.get(tileKey);
+        if (img.complete && img.naturalHeight !== 0) {
+            ctx.drawImage(img, screenX, screenY, tileSize, tileSize);
+        }
+    } else if (!loadingTiles.has(tileKey)) {
+        // Load tile if not already loading
+        loadingTiles.add(tileKey);
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = () => {
+            tileCache.set(tileKey, img);
+            loadingTiles.delete(tileKey);
+            drawMap(); // Redraw when tile loads
+        };
+        
+        img.onerror = () => {
+            loadingTiles.delete(tileKey);
+            // Draw placeholder for failed tiles
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(screenX, screenY, tileSize, tileSize);
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.strokeRect(screenX, screenY, tileSize, tileSize);
+        };
+        
+        // OpenStreetMap tile server
+        // Format: https://tile.openstreetmap.org/{z}/{x}/{y}.png
+        img.src = `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`;
+        
+        // Draw loading placeholder
+        ctx.fillStyle = '#2c3e50';
+        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+        ctx.strokeStyle = '#34495e';
+        ctx.strokeRect(screenX, screenY, tileSize, tileSize);
+    }
 }
 
 function drawSelectionBox() {

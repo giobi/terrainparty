@@ -82,6 +82,8 @@ Or use platforms with auto-managed infrastructure:
 - Netlify
 - Railway
 
+The map tiles are loaded directly from OpenStreetMap servers (no API key required).
+
 See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for easiest setup or [SERVERLESS_DEPLOYMENT.md](SERVERLESS_DEPLOYMENT.md) for fully serverless.
 
 ### Why doesn't it use a map library like Leaflet?
