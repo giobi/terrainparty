@@ -78,8 +78,8 @@ app.post('/api/generate-heightmap', async (req, res) => {
       return res.status(400).json({ error: 'Missing coordinates' });
     }
 
-    // Parse and validate scale parameter (default to 500)
-    const terrainScale = scale !== undefined ? parseFloat(scale) : 500;
+    // Parse and validate scale parameter (default to 50)
+    const terrainScale = scale !== undefined ? parseFloat(scale) : 50;
     if (isNaN(terrainScale) || terrainScale <= 0) {
       return res.status(400).json({ error: 'Invalid scale parameter' });
     }
@@ -129,7 +129,7 @@ app.post('/api/generate-heightmap', async (req, res) => {
   }
 });
 
-async function generateHeightmap(north, south, east, west, size, scale = 500) {
+async function generateHeightmap(north, south, east, west, size, scale = 50) {
   try {
     // Create a grid of elevation samples
     const heightData = new Uint8Array(size * size);
@@ -164,26 +164,27 @@ async function generateHeightmap(north, south, east, west, size, scale = 500) {
   }
 }
 
-function generateSyntheticElevation(lat, lon, baseScale = 500) {
+function generateSyntheticElevation(lat, lon, baseScale = 50) {
   // Generate synthetic terrain using multi-octave noise functions
-  // This creates visible terrain variation within the 12.6km x 12.6km area
-  // while still ensuring each geographic location produces a unique heightmap
+  // This creates both location-specific variation AND interesting terrain within each area
   
-  // Base scale tuned for ~12.6km areas (approximately 0.01 degrees)
-  // Scale of 500 provides good variation (range ~150) within small areas
-  // User can adjust this parameter for different terrain characteristics
+  // Use three octaves at DIFFERENT absolute scales (not relative to baseScale)
+  // to ensure both global uniqueness and local detail:
+  // - Continental scale (0.5): Makes different regions of Earth unique
+  // - Regional scale (baseScale): Controllable by user for different feels  
+  // - Detail scale (baseScale * 5): Fine details within the 12.6km area
   
-  // Use three octaves of noise at different frequencies for interesting terrain
-  const scale1 = baseScale;        // Large features
-  const scale2 = baseScale * 2.5;  // Medium features  
-  const scale3 = baseScale * 5;    // Fine details
+  const continentalScale = 0.5;    // Very large features (~1300km) for global uniqueness
+  const regionalScale = baseScale;  // User-controllable regional features
+  const detailScale = baseScale * 5; // Fine details
   
-  const noise1 = Math.sin(lat * scale1) * Math.cos(lon * scale1) * 0.5 + 0.5;
-  const noise2 = Math.sin(lat * scale2) * Math.cos(lon * scale2) * 0.25 + 0.5;
-  const noise3 = Math.sin(lat * scale3) * Math.cos(lon * scale3) * 0.125 + 0.5;
+  const noise1 = Math.sin(lat * continentalScale) * Math.cos(lon * continentalScale) * 0.5 + 0.5;
+  const noise2 = Math.sin(lat * regionalScale) * Math.cos(lon * regionalScale) * 0.5 + 0.5;
+  const noise3 = Math.sin(lat * detailScale) * Math.cos(lon * detailScale) * 0.5 + 0.5;
   
-  // Combine octaves with decreasing weights
-  const combined = (noise1 * 0.5 + noise2 * 0.3 + noise3 * 0.2);
+  // Weight: continental (30%), regional (40%), detail (30%)
+  // This ensures each location is unique while maintaining good internal variation
+  const combined = (noise1 * 0.3 + noise2 * 0.4 + noise3 * 0.3);
   return Math.floor(combined * 255);
 }
 
