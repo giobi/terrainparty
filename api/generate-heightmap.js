@@ -3,7 +3,7 @@
 
 const sharp = require('sharp');
 
-async function generateHeightmap(north, south, east, west, size) {
+async function generateHeightmap(north, south, east, west, size, scale = 500) {
   try {
     // Create a grid of elevation samples
     const heightData = new Uint8Array(size * size);
@@ -12,14 +12,14 @@ async function generateHeightmap(north, south, east, west, size) {
     const latStep = (north - south) / (size - 1);
     const lonStep = (east - west) / (size - 1);
     
-    console.log(`Generating ${size}x${size} heightmap with synthetic terrain data...`);
+    console.log(`Generating ${size}x${size} heightmap with synthetic terrain data (scale: ${scale})...`);
     
     // Generate synthetic terrain data for all points
     for (let y = 0; y < size; y++) {
       for (let x = 0; x < size; x++) {
         const lat = north - (y * latStep);
         const lon = west + (x * lonStep);
-        const elevation = generateSyntheticElevation(lat, lon);
+        const elevation = generateSyntheticElevation(lat, lon, scale);
         heightData[y * size + x] = elevation;
       }
       
@@ -38,14 +38,14 @@ async function generateHeightmap(north, south, east, west, size) {
   }
 }
 
-function generateSyntheticElevation(lat, lon) {
+function generateSyntheticElevation(lat, lon, baseScale = 500) {
   // Generate synthetic terrain using multi-octave noise functions
   // This creates visible terrain variation within the 12.6km x 12.6km area
   // while still ensuring each geographic location produces a unique heightmap
   
   // Base scale tuned for ~12.6km areas (approximately 0.01 degrees)
   // Scale of 500 provides good variation (range ~150) within small areas
-  const baseScale = 500;
+  // User can adjust this parameter for different terrain characteristics
   
   // Use three octaves of noise at different frequencies for interesting terrain
   const scale1 = baseScale;        // Large features
@@ -67,13 +67,19 @@ module.exports = async (req, res) => {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { north, south, east, west } = req.body;
+    const { north, south, east, west, scale } = req.body;
     
     if (!north || !south || !east || !west) {
       return res.status(400).json({ error: 'Missing coordinates' });
     }
 
-    console.log(`Generating heightmap for bounds: N:${north}, S:${south}, E:${east}, W:${west}`);
+    // Parse and validate scale parameter (default to 500)
+    const terrainScale = scale !== undefined ? parseFloat(scale) : 500;
+    if (isNaN(terrainScale) || terrainScale <= 0) {
+      return res.status(400).json({ error: 'Invalid scale parameter' });
+    }
+
+    console.log(`Generating heightmap for bounds: N:${north}, S:${south}, E:${east}, W:${west}, scale:${terrainScale}`);
 
     // Validate that the area is approximately 12.6km x 12.6km
     const latDiff = Math.abs(north - south);
@@ -89,7 +95,7 @@ module.exports = async (req, res) => {
     // Generate heightmap using Open-Elevation API or terrain data
     // For this implementation, we'll use a tile-based approach with multiple sources
     const heightmapSize = 1081; // Standard size for CS2 heightmaps (1081x1081)
-    const heightmap = await generateHeightmap(north, south, east, west, heightmapSize);
+    const heightmap = await generateHeightmap(north, south, east, west, heightmapSize, terrainScale);
 
     // Convert to grayscale PNG
     const pngBuffer = await sharp(heightmap, {
