@@ -9,7 +9,7 @@ let currentBounds = null;
 let isSelecting = false;
 let tileCache = new Map(); // Cache for loaded tiles
 let loadingTiles = new Set(); // Track tiles being loaded
-let terrainScale = 500; // Default terrain scale
+let terrainScale = 50; // Default terrain scale
 
 // Map projection utilities (Web Mercator)
 function latLonToPixel(lat, lon, zoom) {
@@ -69,7 +69,7 @@ function initMap() {
     const scaleSlider = document.getElementById('scaleSlider');
     const scaleValue = document.getElementById('scaleValue');
     scaleSlider.addEventListener('input', (e) => {
-        terrainScale = parseInt(e.target.value);
+        terrainScale = parseFloat(e.target.value);
         scaleValue.textContent = terrainScale;
     });
     
