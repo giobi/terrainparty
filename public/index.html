@@ -306,6 +306,7 @@
             © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors | 
             © <a href="https://carto.com/attributions" target="_blank">CARTO</a>
             <span class="info-icon" title="Free tile providers - no Google Maps API key needed! Using CARTO (production-ready) with OpenStreetMap fallback. Click to learn more." onclick="window.open('https://github.com/giobi/terrainparty/blob/main/docs/TILE_PROVIDERS.md', '_blank')">?</span>
+            <span style="margin-left: 10px; font-size: 0.75em; color: #7f8c8d;" id="versionInfo">v...</span>
         </div>
     </div>
 
@@ -323,6 +324,19 @@
             <p><strong>Area Size:</strong> 12.6 km × 12.6 km</p>
             <p><strong>Output:</strong> 1081×1081 px PNG</p>
             <p id="centerCoords"><strong>Center:</strong> Click map to select</p>
+        </div>
+
+        <div class="info-box">
+            <p><strong>Terrain Scale:</strong></p>
+            <input type="range" id="scaleSlider" min="100" max="2000" value="500" step="50" style="width: 100%; margin: 5px 0;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85em; color: #bdc3c7;">
+                <span>Smooth (100)</span>
+                <span id="scaleValue">500</span>
+                <span>Rough (2000)</span>
+            </div>
+            <p style="font-size: 0.8em; color: #95a5a6; margin-top: 5px;">
+                Adjust terrain variation. Default: 500
+            </p>
         </div>
 
         <button id="selectAreaBtn">📍 Select Area (Click Map)</button>

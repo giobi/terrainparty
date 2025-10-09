@@ -9,6 +9,7 @@ let currentBounds = null;
 let isSelecting = false;
 let tileCache = new Map(); // Cache for loaded tiles
 let loadingTiles = new Set(); // Track tiles being loaded
+let terrainScale = 500; // Default terrain scale
 
 // Map projection utilities (Web Mercator)
 function latLonToPixel(lat, lon, zoom) {
@@ -63,6 +64,17 @@ function initMap() {
         zoom = Math.max(2, zoom - 1);
         drawMap();
     });
+    
+    // Scale slider
+    const scaleSlider = document.getElementById('scaleSlider');
+    const scaleValue = document.getElementById('scaleValue');
+    scaleSlider.addEventListener('input', (e) => {
+        terrainScale = parseInt(e.target.value);
+        scaleValue.textContent = terrainScale;
+    });
+    
+    // Fetch and display version
+    fetchVersion();
     
     drawMap();
     console.log('Map initialized');
@@ -343,12 +355,17 @@ async function downloadHeightmap() {
         document.getElementById('downloadBtn').disabled = true;
         showStatus('Generating heightmap... This may take a few minutes.', 'info');
 
+        const requestData = {
+            ...currentBounds,
+            scale: terrainScale
+        };
+
         const response = await fetch('/api/generate-heightmap', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(currentBounds)
+            body: JSON.stringify(requestData)
         });
 
         if (!response.ok) {
@@ -374,6 +391,22 @@ async function downloadHeightmap() {
     } finally {
         document.querySelector('.loading').classList.remove('active');
         document.getElementById('downloadBtn').disabled = false;
+    }
+}
+
+// Fetch and display version
+async function fetchVersion() {
+    try {
+        const response = await fetch('/api/version');
+        if (response.ok) {
+            const data = await response.json();
+            const versionElement = document.getElementById('versionInfo');
+            versionElement.textContent = `v${data.version}`;
+            versionElement.title = `Version: ${data.version}\nUpdated: ${new Date(data.timestamp).toLocaleString()}`;
+            console.log('Frontend version:', data.version);
+        }
+    } catch (error) {
+        console.log('Could not fetch version:', error);
     }
 }
 
